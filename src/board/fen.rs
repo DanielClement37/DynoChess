@@ -1,3 +1,10 @@
+// fen.rs reads an FEN-string and converts it into a board position.
+// If the procedure fails, the original position is not changed. Note that
+// checking position legality is not the responsibility of this module. It
+// is perfectly possible to set up a position with two white kings, both
+// kings in check at the same time, or with black in check but white to
+// move.
+
 use super::{
     defs::{Files, Pieces, Ranks, Squares, BB_SQUARES},
     Board,
@@ -10,7 +17,7 @@ use if_chain::if_chain;
 use std::ops::RangeInclusive;
 
 /** Definitions used by the FEN-reader */
-const NUM_FEN_PARTS: usize = 6;
+const NR_OF_FEN_PARTS: usize = 6;
 const SHORT_FEN_PARTS: usize = 4;
 const LIST_OF_PIECES: &str = "kqrbnpKQRBNP";
 const EP_SQUARES_WHITE: RangeInclusive<Square> = Squares::A3..=Squares::H3;
@@ -33,17 +40,17 @@ impl Board {
             Some(f) => f,
             None => FEN_START_POSITION,
         }
-            .replace(EM_DASH, DASH.encode_utf8(&mut [0; 4]))
-            .split(SPACE)
-            .map(|s| s.to_string())
-            .collect();
+        .replace(EM_DASH, DASH.encode_utf8(&mut [0; 4]))
+        .split(SPACE)
+        .map(|s| s.to_string())
+        .collect();
 
         if fen_parts.len() == SHORT_FEN_PARTS {
             fen_parts.append(&mut vec![String::from("0"), String::from("1")]);
         }
 
         // Check the number of fen parts.
-        let nr_of_parts_ok = fen_parts.len() == NUM_FEN_PARTS;
+        let nr_of_parts_ok = fen_parts.len() == NR_OF_FEN_PARTS;
 
         // Set the initial result.
         let mut result: FenResult = if nr_of_parts_ok { Ok(()) } else { Err(0) };
@@ -58,7 +65,7 @@ impl Board {
 
             // Parse all the parts and check if each one succeeds.
             let mut i: usize = 0;
-            while i < NUM_FEN_PARTS && result == Ok(()) {
+            while i < NR_OF_FEN_PARTS && result == Ok(()) {
                 let parser = &fen_parsers[i];
                 let part = &fen_parts[i];
                 let part_ok = parser(&mut new_board, part);

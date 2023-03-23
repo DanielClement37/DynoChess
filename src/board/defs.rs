@@ -1,8 +1,11 @@
-use crate::defs::{Bitboard, BoardConsts, Piece, Square};
+use crate::defs::{Bitboard, NrOf, Piece, Square};
 use std::ops::RangeInclusive;
 
+// Exports
+pub use super::zobrist::{ZobristKey, ZobristRandoms};
+
 #[rustfmt::skip]
-pub const SQUARE_NAME: [&str; BoardConsts::SQUARES] = [
+pub const SQUARE_NAME: [&str; NrOf::SQUARES] = [
     "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
     "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
     "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
@@ -12,10 +15,10 @@ pub const SQUARE_NAME: [&str; BoardConsts::SQUARES] = [
     "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
     "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
 ];
-pub const PIECE_NAME: [&str; BoardConsts::PIECE_TYPES + 1] =
+pub const PIECE_NAME: [&str; NrOf::PIECE_TYPES + 1] =
     ["King", "Queen", "Rook", "Bishop", "Knight", "Pawn", "-"];
-pub const PIECE_CHAR_CAPS: [&str; BoardConsts::PIECE_TYPES + 1] = ["K", "Q", "R", "B", "N", "", "_"];
-pub const PIECE_CHAR_SMALL: [&str; BoardConsts::PIECE_TYPES + 1] = ["k", "q", "r", "b", "n", "", ""];
+pub const PIECE_CHAR_CAPS: [&str; NrOf::PIECE_TYPES + 1] = ["K", "Q", "R", "B", "N", "", "_"];
+pub const PIECE_CHAR_SMALL: [&str; NrOf::PIECE_TYPES + 1] = ["k", "q", "r", "b", "n", "", ""];
 
 pub struct Pieces;
 impl Pieces {
@@ -85,16 +88,16 @@ impl RangeOf {
 }
 
 // Initialize arrays with bitboards for each file, rank and square.
-type TBBFiles = [Bitboard; BoardConsts::FILES];
-type TBBRanks = [Bitboard; BoardConsts::RANKS as usize];
-type TBBSquares = [Bitboard; BoardConsts::SQUARES];
+type TBBFiles = [Bitboard; NrOf::FILES];
+type TBBRanks = [Bitboard; NrOf::RANKS as usize];
+type TBBSquares = [Bitboard; NrOf::SQUARES];
 
 const fn init_bb_files() -> TBBFiles {
     const BB_FILE_A: Bitboard = 0x0101_0101_0101_0101;
-    let mut bb_files: TBBFiles = [0; BoardConsts::FILES];
+    let mut bb_files: TBBFiles = [0; NrOf::FILES];
     let mut i = 0;
 
-    while i < (BoardConsts::FILES) {
+    while i < (NrOf::FILES) {
         bb_files[i] = BB_FILE_A << i;
         i += 1;
     }
@@ -104,10 +107,10 @@ const fn init_bb_files() -> TBBFiles {
 
 const fn init_bb_ranks() -> TBBRanks {
     pub const BB_RANK_1: Bitboard = 0xFF;
-    let mut bb_ranks = [0; BoardConsts::RANKS as usize];
+    let mut bb_ranks = [0; NrOf::RANKS as usize];
     let mut i = 0;
 
-    while i < (BoardConsts::RANKS as usize) {
+    while i < (NrOf::RANKS as usize) {
         bb_ranks[i] = BB_RANK_1 << (i * 8);
         i += 1;
     }
@@ -116,10 +119,10 @@ const fn init_bb_ranks() -> TBBRanks {
 }
 
 const fn init_bb_squares() -> TBBSquares {
-    let mut bb_squares: TBBSquares = [0; BoardConsts::SQUARES];
+    let mut bb_squares: TBBSquares = [0; NrOf::SQUARES];
     let mut i = 0;
 
-    while i < BoardConsts::SQUARES {
+    while i < NrOf::SQUARES {
         bb_squares[i] = 1u64 << i;
         i += 1;
     }
@@ -131,10 +134,10 @@ pub const BB_FILES: TBBFiles = init_bb_files();
 pub const BB_RANKS: TBBRanks = init_bb_ranks();
 pub const BB_SQUARES: TBBSquares = init_bb_squares();
 
-
 // Piece location: (file, rank)
 pub type Location = (u8, u8);
 
+// This enum holds the direction in which a ray of a slider piece can point.
 #[derive(Copy, Clone)]
 pub enum Direction {
     Up,

@@ -1,6 +1,6 @@
 use crate::{
     board::{
-        defs::{Pieces, RangeOf, PIECE_CHAR_CAPS, PIECE_NAME, SQUARE_NAME},
+        defs::{Pieces, RangeOf, SQUARE_NAME},
         Board,
     },
     defs::{Bitboard, Castling, BoardConsts, Sides}

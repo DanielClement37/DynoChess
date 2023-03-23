@@ -18,39 +18,39 @@ pub struct History {
     count: usize,
 }
 
-impl History{
-    pub fn new()->Self{
-        Self{
+impl History {
+    // Create a new history array containing game states.
+    pub fn new() -> Self {
+        Self {
             list: [GameState::new(); MAX_GAME_MOVES as usize],
             count: 0,
         }
     }
 
-    //Clear fn that wipes the array
+    // Wipe the entire array.
     pub fn clear(&mut self) {
         self.list = [GameState::new(); MAX_GAME_MOVES as usize];
         self.count = 0;
     }
 
-    //push fn to put a new gamestate into the array
-    pub fn put(&mut self, gs:GameState){
-        self.list[self.count] = gs;
+    // Put a new game state into the array.
+    pub fn push(&mut self, g: GameState) {
+        self.list[self.count] = g;
         self.count += 1;
     }
 
-    //pop fn to return and remove the last gamestate added to the array
-    pub fn pop(&mut self) ->GameState{
+    // Return the last game state and decremnt the counter. The game state is
+    // not deleted from the array. If necessary, another game state will just
+    // overwrite it.
+    pub fn pop(&mut self) -> GameState {
         self.count -= 1;
         self.list[self.count]
     }
 
-
-    //get reference. returns a pointer to the gamestate
     pub fn get_ref(&self, index: usize) -> &GameState {
         &self.list[index]
     }
 
-    //len. returns the array length
     pub fn len(&self) -> usize {
         self.count
     }

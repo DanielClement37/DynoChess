@@ -1,3 +1,6 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
 pub type Bitboard = u64;
 pub type Piece = usize;
 pub type Side = usize;
@@ -22,6 +25,15 @@ impl BoardConsts {
     pub const RANKS: usize = 8;
 }
 
+pub struct NrOf;
+impl NrOf {
+    pub const PIECE_TYPES: usize = 6;
+    pub const CASTLING_PERMISSIONS: usize = 16; // 0-15
+    pub const SQUARES: usize = 64;
+    pub const FILES: usize = 8;
+    pub const RANKS: usize = 8;
+}
+
 pub struct Castling;
 impl Castling {
     pub const WK: u8 = 1;
@@ -33,4 +45,6 @@ impl Castling {
 
 pub const EMPTY: u64 = 0;
 pub const MAX_GAME_MOVES: usize = 2048;
+pub const MAX_LEGAL_MOVES: u8 = 255;
+pub const MAX_DEPTH: u8 = 254;
 pub const MAX_MOVE_RULE: u8 = 100; // 50/75 move rule
