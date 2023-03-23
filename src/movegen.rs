@@ -68,9 +68,27 @@ impl MoveGen {
         return mg;
     }
 
+    pub fn generate_legal_moves(&self, board: &Board, mt: MoveType) -> MoveList{
+        let mut pseudo_moves = MoveList::new();
+        let mut legal_moves_list = MoveList::new();
+        let mut temp_board = board.clone();
+        self.generate_pseudo_moves(board, &mut pseudo_moves, mt);
+
+        for i in 0..pseudo_moves.len() {
+            let m = pseudo_moves.get_move(i);
+            let is_legal = temp_board.make(m,&self);
+
+            if is_legal {
+                legal_moves_list.push(m);
+                temp_board.unmake();
+            }
+        }
+        return legal_moves_list;
+    }
+
     // Generates moves for the side that is to move. The MoveType parameter
     // determines if all moves, or only captures need to be generated.
-    pub fn generate_moves(&self, board: &Board, ml: &mut MoveList, mt: MoveType) {
+    pub fn generate_pseudo_moves(&self, board: &Board, ml: &mut MoveList, mt: MoveType) {
         self.piece(board, Pieces::KING, ml, mt);
         self.piece(board, Pieces::KNIGHT, ml, mt);
         self.piece(board, Pieces::ROOK, ml, mt);

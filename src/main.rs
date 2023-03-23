@@ -20,24 +20,10 @@ fn main() {
     print::position(&board, None);
     let move_gen = movegen::MoveGen::new();
     let mut movelist = MoveList::new();
-    move_gen.generate_moves(&board, &mut movelist, MoveType::All);
-
     let mut legal_moves_list = MoveList::new();
 
-    println!("num pseudo legal moves: {}", movelist.len());
+    legal_moves_list = move_gen.generate_legal_moves(&board, MoveType::All);
 
-    for i in 0..movelist.len() {
-        let m = movelist.get_move(i);
-        let is_legal = board.make(m,&move_gen);
-
-        if is_legal {
-            //println!("{}", m.as_string());
-            legal_moves_list.push(m);
-            board.unmake();
-        }
-        //println!("{}", m.as_string());
-
-    }
    println!("num legal moves: {}", legal_moves_list.len());
 
 
