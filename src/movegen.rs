@@ -68,16 +68,19 @@ impl MoveGen {
         return mg;
     }
 
+    // Generates all legal moves for the given board.
     pub fn generate_legal_moves(&self, board: &Board, mt: MoveType) -> MoveList{
         let mut pseudo_moves = MoveList::new();
         let mut legal_moves_list = MoveList::new();
         let mut temp_board = board.clone();
         self.generate_pseudo_moves(board, &mut pseudo_moves, mt);
 
+        //Loops through all pseudo moves and checks if they are legal.
         for i in 0..pseudo_moves.len() {
             let m = pseudo_moves.get_move(i);
             let is_legal = temp_board.make(m,&self);
 
+            //If the move is legal, add it to the list of legal moves.
             if is_legal {
                 legal_moves_list.push(m);
                 temp_board.unmake();
