@@ -18,10 +18,11 @@ pub fn run(
     board: Arc<Mutex<Board>>,
     depth: i8,
     mg: Arc<MoveGen>,
-) {
+) -> u64{
     let mut total_time: u128 = 0;
     let mut total_nodes: u64 = 0;
     let mut hash_full = String::from("");
+    let mut last_leaf_nodes:u64 = 0;
 
     // Create a mutex guard for the board, so it can be safely cloned.
     // Panic if the guard can't be created, because something is wrong with
@@ -60,12 +61,14 @@ pub fn run(
             "Perft {}: {} ({} ms, {} leaves/sec{})",
             d, leaf_nodes, elapsed, leaves_per_second, hash_full
         );
+        last_leaf_nodes = leaf_nodes;
     }
 
     // Final calculation of the entire time taken, and average speed of leaves/second.
     let final_lnps = ((total_nodes * 1000) as f64 / total_time as f64).floor();
     println!("Total time spent: {} ms", total_time);
     println!("Execution speed: {} leaves/second", final_lnps);
+    return last_leaf_nodes;
 }
 
 // This is the actual Perft function. It is public, because it is used by
@@ -82,8 +85,8 @@ pub fn perft(
     if depth == 0 {
         return 1;
     }
-    let move_list = mg.generate_legal_moves(board, MoveType::All);
-    //mg.generate_pseudo_moves(board,&mut move_list ,MoveType::All);
+    move_list = mg.generate_legal_moves(board, MoveType::All);
+    //mg.generate_pseudo_moves(board, &mut move_list, MoveType::All);
 
     // Run perft for each of the moves.
     for i in 0..move_list.len() {
