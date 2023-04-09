@@ -8,7 +8,7 @@ use crate::defs::{ Sides};
 use crate::misc::print::position;
 use crate::movegen::defs::{ MoveType};
 use crate::movegen::MoveGen;
-use crate::search::minimax;
+use crate::search::{get_best_move};
 
 pub fn cmd_game_loop(){
     let mut fen = String::new();
@@ -44,6 +44,28 @@ pub fn cmd_game_loop(){
 
     //print the starting position
     position(&board, None);
+
+    if board.game_state.active_color != user_side as u8 {
+        //check for checkmate
+        let opp_moves = mg.generate_legal_moves(&board, MoveType::All);
+
+        if opp_moves.len() == 0 {
+            println!("Checkmate You Win!");
+            return;
+        }
+
+        //Get best ai move from the minimax function here
+        let maximizing = board.game_state.active_color == Sides::WHITE as u8;
+        let best_move = get_best_move(&mut board, &mg, depth,maximizing); // Call the minimax function
+        board.make(best_move.unwrap(), &mg); // Make the best move
+        position(&board, Some(best_move.unwrap().to() as u8)); // Print the updated position
+
+        let player_moves = mg.generate_legal_moves(&board, MoveType::All);
+        if player_moves.len() == 0 {
+            println!("Checkmate You Lose!");
+            return;
+        }
+    }
 
     //start a loop that asks for user input for move
     //if the user enters "quit", exit the loop
@@ -85,16 +107,26 @@ pub fn cmd_game_loop(){
         }
         board.make(legal_moves.get_move(move_index), &mg);
 
-        position(&board, None);
+        position(&board, Some(legal_moves.get_move(move_index).to() as u8));
 
-        let maximizer = if board.game_state.active_color == Sides::WHITE as u8 { true } else { false };
+        // check for checkmate
+        let opp_moves = mg.generate_legal_moves(&board, MoveType::All);
+        if opp_moves.len() == 0 {
+            println!("Checkmate You Win!");
+            return;
+        }
 
-        // Call minimax to get opponent's move
-        let _ = minimax(&mut board, &mg, 5, maximizer); // Update the depth and maximizing flag as needed
+        //Get best ai move from the minimax function here
+        let maximizing = board.game_state.active_color == Sides::WHITE as u8;
+        let best_move = get_best_move(&mut board, &mg, depth,maximizing); // Call the minimax function
+        board.make(best_move.unwrap(), &mg); // Make the best move
+        position(&board, Some(best_move.unwrap().to() as u8)); // Print the updated position
 
-        position(&board, None);
-
-
+        let player_moves = mg.generate_legal_moves(&board, MoveType::All);
+        if player_moves.len() == 0 {
+            println!("Checkmate You Lose!");
+            return;
+        }
     }
 }
 

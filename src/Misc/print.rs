@@ -5,6 +5,7 @@ use crate::{
     },
     defs::{Bitboard, Castling, BoardConsts, Sides}
 };
+use crate::eval::evaluate_position;
 
 type AsciiBoard = [char; BoardConsts::SQUARES];
 
@@ -122,11 +123,14 @@ fn metadata(board: &Board) {
     let hmc = board.game_state.halfmove_clock;
     let fmn = board.game_state.fullmove_number;
 
+    let eval = evaluate_position(board);
+
     println!("{:<20}{}", "Active Color:", active_color);
     println!("{:<20}{}", "Castling:", castling);
     println!("{:<20}{}", "En Passant:", en_passant);
     println!("{:<20}{}", "Half-move clock:", hmc);
     println!("{:<20}{}", "Full-move number:", fmn);
+    println!("{:<20}{}", "Evaluation:", eval);
     println!();
 }
 

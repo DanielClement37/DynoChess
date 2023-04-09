@@ -10,8 +10,9 @@ mod movegen;
 mod perft;
 mod search;
 
-use crate::misc::cmdline::{ random_ai_loop};
+use crate::misc::cmdline::{cmd_game_loop};
 
 fn main() {
-    random_ai_loop();
+    //random_ai_loop();
+    cmd_game_loop();
 }
