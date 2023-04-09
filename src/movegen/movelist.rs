@@ -3,6 +3,7 @@
 
 use crate::defs::{MAX_LEGAL_MOVES};
 use std::mem;
+use std::mem::MaybeUninit;
 use crate::movegen::defs::Move;
 
 
@@ -22,7 +23,7 @@ impl MoveList {
         Self {
             list: unsafe {
                 #[allow(clippy::uninit_assumed_init)]
-                mem::MaybeUninit::uninit().assume_init()
+                MaybeUninit::assume_init(mem::MaybeUninit::uninit())
             },
             count: 0,
         }

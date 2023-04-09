@@ -2,7 +2,7 @@ use crate::{
     board::Board,
     misc::print,
     movegen::{
-        defs::{MoveList, MoveType},
+        defs::{ MoveType},
         MoveGen,
     },
 };
@@ -21,7 +21,7 @@ pub fn run(
 ) -> u64{
     let mut total_time: u128 = 0;
     let mut total_nodes: u64 = 0;
-    let mut hash_full = String::from("");
+    let hash_full = String::from("");
     let mut last_leaf_nodes:u64 = 0;
 
     // Create a mutex guard for the board, so it can be safely cloned.
@@ -79,13 +79,13 @@ pub fn perft(
     mg: &MoveGen,
 ) -> u64 {
     let mut leaf_nodes: u64 = 0;
-    let mut move_list: MoveList = MoveList::new();
+
 
     // Count each visited leaf node.
     if depth == 0 {
         return 1;
     }
-    move_list = mg.generate_legal_moves(board, MoveType::All);
+    let move_list = mg.generate_legal_moves(board, MoveType::All);
     //mg.generate_pseudo_moves(board, &mut move_list, MoveType::All);
 
     // Run perft for each of the moves.

@@ -41,7 +41,7 @@ Storing the "To" square: Shift LEFT 9 bits, then XOR with "data".
 
 pub use super::{magics::Magic, movelist::MoveList};
 use crate::{
-    board::defs::{PIECE_CHAR_SMALL, SQUARE_NAME},
+    board::defs::{ SQUARE_NAME},
     defs::{Piece, Square},
 };
 use crate::board::defs::PIECE_NAME;
