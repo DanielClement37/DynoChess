@@ -1,77 +1,58 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-
-interface Settings {
-    difficulty: number;
-    startingSide: string;
-}
-
+import { useState } from 'react';
+import { useNavigate  } from 'react-router-dom';
+import {Player} from "../types/GameEnums.ts";
+import {GameSettingsAI} from "../types/GameSettingsAI.ts";
 
 export const HomePage = () => {
-    const [showSettings, setShowSettings] = useState(false);
-    const [settings, setSettings] = useState<Settings>({
-        difficulty: 1,
-        startingSide: 'white',
-    });
-
+    const [showModal, setShowModal] = useState(false);
+    const [difficulty, setDifficulty] = useState(1);
+    const [startingPlayer, setStartingPlayer] = useState<Player | string>(Player.WHITE);
+    const navigate = useNavigate ();
 
     const handlePlayClick = () => {
-        setShowSettings(true);
-    };
+        setShowModal(true);
+    }
 
-    const handleDifficultyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSettings({ ...settings, difficulty: Number(e.target.value) });
-    };
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const handleFormSubmit = (event) => {
+        event.preventDefault();
+        setShowModal(false);
 
-    const handleStartingSideChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSettings({ ...settings, startingSide: e.target.value });
-    };
-
-    const renderSettingsForm = () => {
-        if (showSettings) {
-
-            return (
-                <div>
-                    <h2>Game Settings</h2>
-                    <div>
-                        <label>
-                            Difficulty:
-                            <input
-                                type="number"
-                                value={settings.difficulty}
-                                onChange={handleDifficultyChange}
-                            />
-                        </label>
-                        <label>
-                            Starting Side:
-                            <select value={settings.startingSide} onChange={handleStartingSideChange}>
-                                <option value="white">White</option>
-                                <option value="black">Black</option>
-                                <option value="random">Random</option>
-                            </select>
-                        </label>
-                    </div>
-                    <Link to={{ pathname: '/play/ai', state: { settings } }}><button>Start Game</button></Link>
-                </div>
-            );
+        let finalStartingPlayer: Player | string = startingPlayer;
+        if (startingPlayer === 'random') {
+            finalStartingPlayer = Math.random() < 0.5 ? Player.WHITE : Player.BLACK;
         }
-        return null;
-    };
 
-    const renderPlayButton = () => {
-        if (!showSettings) {
-            return (
-                <button onClick={handlePlayClick}>Play vs AI</button>
-            );
-        }
-        return null;
-    };
+        navigate('/play/ai', {state: { difficulty, startingPlayer: finalStartingPlayer } as GameSettingsAI});
+    }
 
     return (
         <div>
-            <h1>Home Page</h1>
-            {renderPlayButton()}
-            {renderSettingsForm()}
+            <button onClick={handlePlayClick}>Play AI</button>
+            {showModal && (
+                <form onSubmit={handleFormSubmit}>
+                    <label>
+                        Difficulty:
+                        <select value={difficulty} onChange={(event) => setDifficulty(Number(event.target.value))}>
+                            <option value={2}>Easy</option>
+                            <option value={4}>Medium</option>
+                            <option value={6}>Hard</option>
+                        </select>
+                    </label>
+                    <br />
+                    <label>
+                        Starting Player:
+                        <select value={startingPlayer} onChange={(event) => setStartingPlayer(event.target.value as Player | string)}>
+                            <option value={Player.WHITE}>White</option>
+                            <option value={Player.BLACK}>Black</option>
+                            <option value="random">Random</option>
+                        </select>
+                    </label>
+                    <br />
+                    <button type="submit">Start Game</button>
+                </form>
+            )}
         </div>
     );
-};
+}
