@@ -4,3 +4,4 @@ export interface GameSettingsAI{
     difficulty: number;
     startingPlayer: Player | string;
 }
+

@@ -10,5 +10,7 @@ module.exports = {
   plugins: ['react-refresh'],
   rules: {
     'react-refresh/only-export-components': 'warn',
+    // note you must disable the base rule as it can report incorrect errors
+    "no-unused-vars": "off",
   },
 }
