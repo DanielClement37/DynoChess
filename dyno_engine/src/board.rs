@@ -25,15 +25,18 @@ use crate::{
     }
 };
 use std::sync::Arc;
+use serde::{Serialize, Deserialize};
+use serde_big_array::BigArray;
 
 // This file implements the engine's board representation; it is bit-board
 // based, with the least significant bit being A1.
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Board {
     pub bb_pieces: [[Bitboard; NrOf::PIECE_TYPES]; Sides::BOTH],
     pub bb_side: [Bitboard; Sides::BOTH],
     pub game_state: GameState,
     pub history: History,
+    #[serde(with = "BigArray")]
     pub piece_list: [Piece; NrOf::SQUARES],
     zr: Arc<ZobristRandoms>,
 }

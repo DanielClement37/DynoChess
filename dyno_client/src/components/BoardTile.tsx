@@ -1,6 +1,6 @@
 import {PieceType, Player} from "../types/GameEnums.ts";
 import {classNames} from "../utils/ClassNames.ts";
-import PawnBlack from "../assets/pawn-black.svg";
+import BlackPawn from "../assets/pawn-black.svg";
 import WhitePawn from "../assets/pawn-white.svg";
 import BlackRook from "../assets/rook-black.svg";
 import WhiteRook from "../assets/rook-white.svg";
@@ -14,7 +14,6 @@ import BlackKing from "../assets/king-black.svg";
 import WhiteKing from "../assets/king-white.svg";
 
 
-
 export interface BoardTileProps {
     piece:number;
     color: Player;
@@ -26,7 +25,7 @@ export const BoardTile = ({piece, color, tileColor,hasPiece}: BoardTileProps) =>
     const getPieceImage = () => {
         switch (piece) {
             case PieceType.PAWN:
-                return color === Player.WHITE ? WhitePawn : PawnBlack;
+                return color === Player.WHITE ? WhitePawn : BlackPawn;
             case PieceType.ROOK:
                 return color === Player.WHITE ? WhiteRook : BlackRook;
             case PieceType.KNIGHT:
@@ -59,7 +58,6 @@ export const BoardTile = ({piece, color, tileColor,hasPiece}: BoardTileProps) =>
                 "board-tile",
                 tileColor == "light" ? 'light' : 'dark',
             )}>
-                <h5>empty</h5>
             </div>
         );
     }

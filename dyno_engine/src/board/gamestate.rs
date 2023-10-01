@@ -5,12 +5,14 @@ use crate::{
     movegen::defs::Move,
 };
 
+use serde::{Serialize, Deserialize};
+
 // This is simply a struct that collects all the variables holding the game sate.
 // It makes it very easy to make a backup of the game state during make(), and
 // restore it when performing unmake(). It prevents having to backup and restore
 // each game state variable one by one.
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Serialize, Deserialize, Debug)]
 pub struct GameState {
     pub active_color: u8,
     pub castling: u8,

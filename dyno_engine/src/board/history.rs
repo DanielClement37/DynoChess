@@ -1,5 +1,7 @@
 use super::gamestate::GameState;
 use crate::defs::MAX_GAME_MOVES;
+use serde::{Serialize, Deserialize};
+use serde_big_array::BigArray;
 
 // The history struct is basically an array holding the values of the game
 // states at each move. If a move is made in make(), this function pushes the
@@ -12,8 +14,9 @@ use crate::defs::MAX_GAME_MOVES;
 //   necessary, such as during console play: the chess engine will always have
 //   one push for every pop during search.)
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct History {
+    #[serde(with = "BigArray")]
     list: [GameState; MAX_GAME_MOVES as usize],
     count: usize,
 }

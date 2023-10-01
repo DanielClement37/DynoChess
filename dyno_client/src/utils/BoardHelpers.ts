@@ -56,7 +56,7 @@ export const ConvertBitboardsTo64Array = (bb_pieces: [[bigint, bigint, bigint, b
             });
         }
     }
-    tiles.sort((a, b) => a.position - b.position);
+    tiles.sort((a, b) => b.position - a.position);
 
     return tiles;
 

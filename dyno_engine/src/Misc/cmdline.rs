@@ -8,7 +8,7 @@ use crate::defs::{ Sides};
 use crate::misc::print::position;
 use crate::movegen::defs::{MoveList, MoveType};
 use crate::movegen::MoveGen;
-use crate::search::{alpha_beta, minimax};
+use crate::search::{alpha_beta};
 use crate::search::defs::INF;
 
 pub fn cmd_game_loop(){

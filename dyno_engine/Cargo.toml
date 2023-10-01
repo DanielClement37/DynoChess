@@ -4,10 +4,19 @@ version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-rand = { version = "0.8.3", features = ["small_rng"] }
+rand = { version = "0.8.3", features = ["small_rng"]  }
+getrandom = { version = "0.2.3", features = ["js"] }
 rand_chacha = "0.3.0"
 if_chain = "1.0.2"
 clap = "2.33.3"
 crossbeam-channel = "0.5.1"
+wasm-bindgen = "0.2.84"
+serde = { version = "1.0", features = ["derive", "rc"] }
+serde-wasm-bindgen = "0.4"
+gloo-utils = { version = "0.1", features = ["serde"] }
+serde-big-array = "0.5.1"
+web-sys = {version = "0.3.64", features = ["console"] }

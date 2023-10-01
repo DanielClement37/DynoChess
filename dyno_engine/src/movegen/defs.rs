@@ -45,6 +45,7 @@ use crate::{
     defs::{Piece, Square},
 };
 use crate::board::defs::PIECE_NAME;
+use serde::{Serialize, Deserialize};
 
 const MOVE_ONLY: usize = 0x00_00_00_00_00_FF_FF_FF;
 
@@ -64,7 +65,7 @@ impl Shift {
     pub const SORTSCORE: usize = 24;
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq , Serialize, Deserialize)]
 pub enum MoveType {
     Quiet,
     Capture,
@@ -73,7 +74,7 @@ pub enum MoveType {
 
 /* This struct contains the move data. It's a struct so it can be instantiated, and then
  * it can provide all of the methods associated with it to easily decode the move data. */
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Serialize, Deserialize, Debug)]
 pub struct Move {
     data: usize,
 }
