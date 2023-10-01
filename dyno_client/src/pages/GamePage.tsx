@@ -7,18 +7,19 @@ import {Game} from "../components/Game.tsx";
 import {MatchState} from "../types/GameState.ts";
 import {PlayerInfo} from "../types/PlayerInfo.ts";
 import "../styles/Match.css"
-import {make_initial_position} from "../../../dyno_engine/pkg";
+import {make_initial_position, get_legal_moves} from "../../../dyno_engine/pkg";
 import {InitBoardState} from "../utils/BoardHelpers.ts";
 
 
 export const GamePage = () => {
     const settings:GameSettingsAI = useLocation().state;
     const initialPosition = make_initial_position();
-    console.log(initialPosition);
-    const testPosition = InitBoardState();
-    console.log(testPosition);
-    const [matchState, setMatchState] = React.useState<MatchState>({board: testPosition, aiSettings:settings});
+    const [matchState, setMatchState] = React.useState<MatchState>({board: initialPosition, aiSettings:settings});
 
+    const generateMovesHandler = () => {
+        const moves = get_legal_moves(matchState.board);
+        console.log(moves);
+    }
 
 
     // this will end up getting user info from the database
@@ -38,6 +39,7 @@ export const GamePage = () => {
     return (
         <div className="game-page-container">
             <Game  boardState={matchState.board} player1Info={player1Info} player2Info={player2Info}/>
+            <button onClick={generateMovesHandler}>Generate Moves</button>
         </div>
     );
 };

@@ -4,10 +4,12 @@
 use crate::defs::{MAX_LEGAL_MOVES};
 use std::mem::MaybeUninit;
 use crate::movegen::defs::Move;
+use serde::{Serialize, Deserialize};
+use serde_big_array::BigArray;
 
-
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Serialize, Deserialize, Debug)]
 pub struct MoveList{
+    #[serde(with = "BigArray")]
     list: [Move; MAX_LEGAL_MOVES as usize],
     count: u8
 }
