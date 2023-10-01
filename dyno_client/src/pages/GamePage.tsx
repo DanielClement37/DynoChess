@@ -15,7 +15,10 @@ export const GamePage = () => {
     const settings:GameSettingsAI = useLocation().state;
     const initialPosition = make_initial_position();
     console.log(initialPosition);
-    const [matchState, setMatchState] = React.useState<MatchState>({board: initialPosition, aiSettings:settings});
+    const testPosition = InitBoardState();
+    console.log(testPosition);
+    const [matchState, setMatchState] = React.useState<MatchState>({board: testPosition, aiSettings:settings});
+
 
 
     // this will end up getting user info from the database
