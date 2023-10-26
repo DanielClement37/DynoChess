@@ -26,6 +26,11 @@
     background-color: #b58863;
 }
 
+/* I want to show the selected tile with a border */
+.board-tile.selected {
+    border: 2px solid #000;
+}
+
 /* Styling for the chess pieces */
 .board-tile img {
     max-width: 100%;

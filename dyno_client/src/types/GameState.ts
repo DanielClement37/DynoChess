@@ -22,7 +22,7 @@ export interface GameState {
 
 export interface MatchState {
     board: BoardState
-    aiSettings: GameSettingsAI
+    aiSettings: GameSettingsAI | null
 }
 
 export interface Tile {
