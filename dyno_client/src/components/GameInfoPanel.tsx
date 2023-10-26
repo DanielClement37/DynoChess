@@ -1,10 +1,3 @@
-
-
 export const GameInfoPanel = () => {
-
-    return (
-        <div>
-
-        </div>
-    );
+	return <div></div>;
 };

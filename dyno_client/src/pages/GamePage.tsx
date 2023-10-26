@@ -17,37 +17,26 @@ export const GamePage = () => {
 	const matchState = state.matchState;
 
 	useEffect(() => {
-		console.log("ai settings changed");
 		dispatch({
 			type: "SET_MATCH_STATE",
 			payload: { board: make_initial_position(), aiSettings: settings },
 		});
-	}, [settings]);
+	}, [dispatch, settings]);
 
-	
-
-	const generateMovesHandler = () => {
+	useEffect(() => {
 		//get legal moves then convert to move objects
 		const legalMovesNumbers = get_legal_moves(matchState.board);
 		const moveDataList: number[] = legalMovesNumbers.list.map((moveDataObj: { data: number }) => moveDataObj.data);
 		const moveCount: number = legalMovesNumbers.count;
-		const moves:Move[] = moveDataList.slice(0, moveCount).map((moveData: number) => {
+		const moves: Move[] = moveDataList.slice(0, moveCount).map((moveData: number) => {
 			const move = ConvertBitsToMove(moveData);
 			return move;
-		})
-		console.log(moves);
-
+		});
 		dispatch({
 			type: "SET_MOVE_LIST",
 			payload: moves,
 		});
-	};
-
-	useEffect(() => {
-		console.log("moves generated");
-        generateMovesHandler();
-    }, [matchState]);
-
+	}, [dispatch, matchState.board]);
 
 	// this will end up getting user info from the database
 	const player1Info: PlayerInfo = {

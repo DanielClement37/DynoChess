@@ -12,11 +12,8 @@ import BlackQueen from "../assets/queen-black.svg";
 import WhiteQueen from "../assets/queen-white.svg";
 import BlackKing from "../assets/king-black.svg";
 import WhiteKing from "../assets/king-white.svg";
-import { AppContext } from "../context/AppContext.tsx";
-import React, { useContext } from "react";
 
 export interface BoardTileProps {
-	location: number;
 	isPossibleMove: boolean;
 	piece: number;
 	color: Player;
@@ -24,8 +21,7 @@ export interface BoardTileProps {
 	hasPiece: boolean;
 	selectSquareHandler?: () => void;
 }
-export const BoardTile = ({ location, isPossibleMove, piece, color, tileColor, hasPiece, selectSquareHandler }: BoardTileProps) => {
-
+export const BoardTile = ({ isPossibleMove, piece, color, tileColor, hasPiece, selectSquareHandler }: BoardTileProps) => {
 	// get the image for the pieces
 	const getPieceImage = () => {
 		switch (piece) {

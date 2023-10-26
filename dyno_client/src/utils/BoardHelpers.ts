@@ -57,15 +57,15 @@ export const ConvertBitsToMove = (moveData: number): Move => {
 
 	move.piece = moveData & 7;
 	move.from = (moveData >> 3) & 63;
-	move.from = 63 - move.from;			//todo: decouple this code
+	move.from = 63 - move.from; //todo: decouple this code
 	move.to = (moveData >> 9) & 63;
-	move.to = 63 - move.to;				//todo: decouple this code
+	move.to = 63 - move.to; //todo: decouple this code
 	move.capture = (moveData >> 15) & 7;
 	move.promotion = (moveData >> 18) & 7;
 	move.isEnPassant = ((moveData >> 21) & 1) === 1;
 	move.isDoublePawnPush = ((moveData >> 22) & 1) === 1;
 	move.isCastle = ((moveData >> 23) & 1) === 1;
 	move.sortScore = (moveData >> 24) & 0xffffffff;
-	
+
 	return move;
 };
