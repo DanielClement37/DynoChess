@@ -57,9 +57,9 @@ export const ConvertBitsToMove = (moveData: number): Move => {
 
 	move.piece = moveData & 7;
 	move.from = (moveData >> 3) & 63;
-	move.from = 63 - move.from; //todo: decouple this code
+	move.from = FlipSquare(move.from);
 	move.to = (moveData >> 9) & 63;
-	move.to = 63 - move.to; //todo: decouple this code
+	move.to = FlipSquare(move.to);
 	move.capture = (moveData >> 15) & 7;
 	move.promotion = (moveData >> 18) & 7;
 	move.isEnPassant = ((moveData >> 21) & 1) === 1;
@@ -68,4 +68,26 @@ export const ConvertBitsToMove = (moveData: number): Move => {
 	move.sortScore = (moveData >> 24) & 0xffffffff;
 
 	return move;
+};
+
+
+//flip square then flip x axis
+export const FlipSquare = (square: number): number => {
+	const row = square >> 3;
+	const col = square & 7;
+	return (7 - row) * 8 + col;	
+}
+
+export const ConvertMoveToBits = (move: Move): number => {
+	let moveData = 0;
+	moveData |= move.piece;
+	moveData |= (63 - move.from) << 3;
+	moveData |= (63 - move.to) << 9;
+	moveData |= move.capture << 15;
+	moveData |= move.promotion << 18;
+	moveData |= (move.isEnPassant ? 1 : 0) << 21;
+	moveData |= (move.isDoublePawnPush ? 1 : 0) << 22;
+	moveData |= (move.isCastle ? 1 : 0) << 23;
+	moveData |= move.sortScore << 24;
+	return moveData;
 };

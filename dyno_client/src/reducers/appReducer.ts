@@ -1,5 +1,5 @@
-import { SET_MATCH_STATE, SET_MOVE_LIST, SET_SELECTED_SQUARE } from "../actions/actionTypes";
-import { make_initial_position } from "engine_wasm";
+import { SET_MATCH_STATE, SET_MOVE_LIST, SET_SELECTED_SQUARE, MAKE_MOVE } from "../actions/actionTypes";
+import { make_initial_position } from "dyno_engine";
 import { MatchState } from "../types/GameState";
 import { Move } from "../types/Move";
 
@@ -24,6 +24,8 @@ export const appReducer = (state: AppState, action: any) => {
 			return { ...state, moveList: action.payload };
 		case SET_SELECTED_SQUARE:
 			return { ...state, selectedSquare: action.payload };
+		case MAKE_MOVE:
+			return { ...state, matchState: action.payload };
 		default:
 			return state;
 	}

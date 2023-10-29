@@ -7,7 +7,7 @@ import { Move } from "../types/Move.ts";
 import { Game } from "../components/Game.tsx";
 import { PlayerInfo } from "../types/PlayerInfo.ts";
 import "../styles/Match.css";
-import { make_initial_position, get_legal_moves } from "../../../dyno_engine/pkg";
+import { make_initial_position, get_legal_moves } from "dyno_engine";
 import { ConvertBitsToMove } from "../utils/BoardHelpers.ts";
 import { AppContext } from "../context/AppContext.tsx";
 
