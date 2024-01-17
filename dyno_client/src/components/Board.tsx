@@ -1,9 +1,9 @@
 import { useCallback, useContext } from "react";
 import { AppContext } from "../context/AppContext.tsx";
 import { BoardTile } from "./BoardTile.tsx";
-import { ConvertBitboardsTo64Array, ConvertBitsToMove, ConvertMoveToBits, FlipSquare } from "../utils/BoardHelpers.ts";
+import { ConvertBitboardsTo64Array, ConvertBitsToMove, ConvertMoveToBits } from "../utils/BoardHelpers.ts";
 import { PieceType } from "../types/GameEnums.ts";
-import { get_legal_moves, make_engine_move } from "dyno_engine";
+import { get_legal_moves, make_engine_move, make_move } from "dyno_engine";
 import { MAKE_MOVE, SET_SELECTED_SQUARE } from "../actions/actionTypes.ts";
 import { Move } from "../types/Move.ts";
 
@@ -20,53 +20,63 @@ export const Board = () => {
 
 	const possibleMoves = getPossibleMoves();
 
-	// Function to handle the piece movement
-	const handleMove = (to: number) => {
-		//try move in wasm engine then update board
-		const move_string = `${FlipSquare(selectedSquare)} ${FlipSquare(to)}`;
+	const handleMove = async (move: Move) => {
+		const moveData = ConvertMoveToBits(move);
 
-		if (aiDifficulty === undefined) throw new Error("AI difficulty is undefined");
 		try {
-			const response = make_engine_move(matchState.board, move_string, aiDifficulty);
+			const response = await make_move(matchState.board, moveData);
+
 			console.log(response);
-			if (response === "Checkmate") {
-				// Handle checkmate
-				const newBoard = response.RegularMove;
-				console.log("Checkmate reached");
+
+			if (response === "Checkmate" || response.status === "PlayerCheckmate" || response.status === "InvalidMove") {
+				// Handle terminal conditions
+				const newBoard = response === "Checkmate" ? response.Checkmate : response.status === "PlayerCheckmate" ? response.PlayerCheckmate : matchState.board;
+				console.log("Terminal condition reached");
 				dispatch({ type: MAKE_MOVE, payload: { board: newBoard, aiSettings: matchState.aiSettings } });
-			} else if (response.status === "PlayerCheckmate") {
-				// Handle player checkmate
-				const newBoard = response.RegularMove;
-				console.log("Player checkmate reached");
-				dispatch({ type: MAKE_MOVE, payload: { board: newBoard, aiSettings: matchState.aiSettings } });
-			} else if (response.status === "InvalidMove") {
-				// Handle an invalid move
-				console.log("Invalid move");
+				dispatch({ type: SET_SELECTED_SQUARE, payload: -1 });
 			} else {
 				// Handle a regular move
 				const newBoard = response.RegularMove;
 				console.log("Regular move");
 				dispatch({ type: MAKE_MOVE, payload: { board: newBoard, aiSettings: matchState.aiSettings } });
+				dispatch({ type: SET_SELECTED_SQUARE, payload: -1 });
+
+				// Get new legal moves
+				const legalMovesNumbers = get_legal_moves(newBoard);
+				const moveDataList: number[] = legalMovesNumbers.list.map((moveDataObj: { data: number }) => moveDataObj.data);
+				const moveCount: number = legalMovesNumbers.count;
+				const moves: Move[] = moveDataList.slice(0, moveCount).map((moveData: number) => {
+					const move = ConvertBitsToMove(moveData);
+					return move;
+				});
+				dispatch({
+					type: "SET_MOVE_LIST",
+					payload: moves,
+				});
+
+				// AI waits for the board to update before making a move
+				const engineMoveResponse = await make_engine_move(newBoard, aiDifficulty as number);
+				console.log(engineMoveResponse);
+				if (engineMoveResponse === "Checkmate" || engineMoveResponse.status === "PlayerCheckmate" || engineMoveResponse.status === "InvalidMove") {
+					// Handle terminal conditions for engine move
+					const updatedBoard =
+						engineMoveResponse === "Checkmate"
+							? engineMoveResponse.Checkmate
+							: engineMoveResponse.status === "PlayerCheckmate"
+							? engineMoveResponse.PlayerCheckmate
+							: newBoard;
+					console.log("Terminal condition reached for engine move");
+					dispatch({ type: MAKE_MOVE, payload: { board: updatedBoard, aiSettings: matchState.aiSettings } });
+				} else {
+					// Handle a regular engine move
+					const updatedBoard = engineMoveResponse.RegularMove;
+					console.log("Regular engine move");
+					dispatch({ type: MAKE_MOVE, payload: { board: updatedBoard, aiSettings: matchState.aiSettings } });
+				}
 			}
 		} catch (error) {
 			console.log(error);
 		}
-
-		// Update the selected square
-		dispatch({ type: SET_SELECTED_SQUARE, payload: -1 });
-
-		//get new legal moves
-		const legalMovesNumbers = get_legal_moves(matchState.board);
-		const moveDataList: number[] = legalMovesNumbers.list.map((moveDataObj: { data: number }) => moveDataObj.data);
-		const moveCount: number = legalMovesNumbers.count;
-		const moves: Move[] = moveDataList.slice(0, moveCount).map((moveData: number) => {
-			const move = ConvertBitsToMove(moveData);
-			return move;
-		});
-		dispatch({
-			type: "SET_MOVE_LIST",
-			payload: moves,
-		});
 	};
 
 	return (
@@ -78,7 +88,15 @@ export const Board = () => {
 
 				const handleTileClick = () => {
 					if (isPossibleMove) {
-						handleMove(index);
+						//get move object from possible moves if move is promotion then handle promotion with a modal then handle move
+						const move = possibleMoves.find((move) => move.to === index);
+						console.log("selected move", move);
+						if (move?.promotion !== PieceType.NONE) {
+							//TODO handle promotion
+							console.log("promotion");
+						} else {
+							handleMove(move as Move);
+						}
 					} else {
 						// Dispatch an action to update the selected square when clicked
 						dispatch({ type: SET_SELECTED_SQUARE, payload: index });

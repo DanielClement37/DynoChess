@@ -71,14 +71,25 @@ export const ConvertBitsToMove = (moveData: number): Move => {
 };
 
 
-//flip square then flip x axis
+//flip y then flip x axis
 export const FlipSquare = (square: number): number => {
 	const row = square >> 3;
 	const col = square & 7;
 	return (7 - row) * 8 + col;	
 }
 
+export const flipXAxis = (square: number): number => {
+	const row = square >> 3;
+	const col = square & 7;
+	return row * 8 + (7 - col);
+}
+
 export const ConvertMoveToBits = (move: Move): number => {
+
+	//flip the col of the square
+	move.from = flipXAxis(move.from);
+	move.to = flipXAxis(move.to);
+
 	let moveData = 0;
 	moveData |= move.piece;
 	moveData |= (63 - move.from) << 3;

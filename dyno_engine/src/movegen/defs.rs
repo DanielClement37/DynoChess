@@ -129,7 +129,7 @@ impl Move {
 
     pub fn as_string(&self) -> String {
         format!(
-            "from: {} to: {} piece type: {}",
+            "Engine Move:\nfrom: {} to: {} piece type: {}",
             SQUARE_NAME[self.from()],
             SQUARE_NAME[self.to()],
             PIECE_NAME[self.piece()]
