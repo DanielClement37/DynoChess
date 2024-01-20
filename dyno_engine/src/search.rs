@@ -5,8 +5,9 @@ use crate::eval::evaluate_position;
 use crate::movegen::defs::{Move, MoveList, MoveType};
 use crate::movegen::MoveGen;
 use crate::search::defs::INF;
+use std::time::{Duration, Instant};
 
-pub fn minimax(board: &mut Board, mg: &MoveGen, depth: u8, maximizing: bool) -> ( i16, Option<Move>) {
+pub fn minimax(board: &mut Board, mg: &MoveGen, depth: u8, maximizing: bool) -> (i16, Option<Move>) {
     if depth == 0 {
         return (evaluate_position(board), None);
     }
@@ -69,9 +70,8 @@ pub fn alpha_beta(
     maximizing: bool,
 ) -> (i16, Option<Move>) {
     if depth == 0 {
-        return (evaluate_position(board), None);
-    }
-    if maximizing {
+        (evaluate_position(board), None)
+    } else if maximizing {
         let mut best_value = -INF;
         let mut best_move: Option<Move> = None;
         let mut value;
@@ -125,4 +125,27 @@ pub fn alpha_beta(
         }
         (best_value, best_move)
     }
+}
+
+// iterative_deepening_search function with modified return type
+pub fn iterative_deepening_search(
+    board: &mut Board,
+    mg: &MoveGen,
+    max_depth: u8,
+    engine_color: u8,
+) -> Option<Move> {
+    let mut best_move: Option<Move> = None;
+
+    for depth in 1..=max_depth {
+        let maximizing = board.game_state.active_color == engine_color;
+        if let Some(mv) = alpha_beta(board, mg, depth, -INF, INF, maximizing).1 {
+            best_move = Some(mv);
+            web_sys::console::log_1(&depth.into());
+        } else {
+            // Break if no move found for the current depth
+            break;
+        }
+    }
+
+    best_move
 }

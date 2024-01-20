@@ -8,6 +8,7 @@ mod perft;
 mod search;
 
 extern crate web_sys;
+use defs::Side;
 use wasm_bindgen_futures::JsFuture;
 use js_sys::Promise;
 use gloo_utils::format::JsValueSerdeExt;
@@ -18,7 +19,7 @@ use serde_wasm_bindgen::Serializer;
 use crate::defs::Sides;
 
 use crate::movegen::defs::{Move, MoveList, MoveType};
-use crate::search::alpha_beta;
+use crate::search::{alpha_beta, iterative_deepening_search};
 use crate::search::defs::INF;
 use std::panic;
 
@@ -88,14 +89,14 @@ pub async fn make_move(board: JsValue, client_mv: usize)-> Result<JsValue, JsVal
 
 /// return a serialized version of the board after the engine has made a move
 #[wasm_bindgen]
-pub async fn make_engine_move(board: JsValue, depth: u8) ->  Result<JsValue, JsValue> {
+pub async fn make_engine_move(board: JsValue, depth: u8, engine_color: u8) ->  Result<JsValue, JsValue> {
     let serializer = Serializer::new().serialize_large_number_types_as_bigints(true);
     let mut board:Board = serde_wasm_bindgen::from_value(board).unwrap_or_else(|_| panic!("Failed to deserialize board"));
     let mg = movegen::MoveGen::new();
 
     // Get best AI move from the minimax function here
-    let maximizing = board.game_state.active_color == Sides::WHITE as u8;
-    let best_move = alpha_beta(&mut board, &mg, depth, -INF, INF, maximizing).1;
+    //let maximizing = board.game_state.active_color == engine_color;
+    let best_move = iterative_deepening_search(&mut board, &mg, depth, engine_color);
 
     board.make(best_move.unwrap(), &mg); // Make the best move
 

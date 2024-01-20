@@ -6,6 +6,7 @@ import { PieceType } from "../types/GameEnums.ts";
 import { get_legal_moves, make_engine_move, make_move } from "dyno_engine";
 import { MAKE_MOVE, SET_SELECTED_SQUARE } from "../actions/actionTypes.ts";
 import { Move } from "../types/Move.ts";
+import { BoardState } from "../types/GameState.ts";
 
 export const Board = () => {
 	const { state, dispatch } = useContext(AppContext);
@@ -26,8 +27,6 @@ export const Board = () => {
 		try {
 			const response = await make_move(matchState.board, moveData);
 
-			console.log(response);
-
 			if (response === "Checkmate" || response.status === "PlayerCheckmate" || response.status === "InvalidMove") {
 				// Handle terminal conditions
 				const newBoard = response === "Checkmate" ? response.Checkmate : response.status === "PlayerCheckmate" ? response.PlayerCheckmate : matchState.board;
@@ -36,10 +35,13 @@ export const Board = () => {
 				dispatch({ type: SET_SELECTED_SQUARE, payload: -1 });
 			} else {
 				// Handle a regular move
-				const newBoard = response.RegularMove;
+				const newBoard = response.RegularMove as BoardState;
 				console.log("Regular move");
 				dispatch({ type: MAKE_MOVE, payload: { board: newBoard, aiSettings: matchState.aiSettings } });
 				dispatch({ type: SET_SELECTED_SQUARE, payload: -1 });
+
+				// Allow React to re-render before proceeding
+				await new Promise(resolve => setTimeout(resolve, 0));
 
 				// Get new legal moves
 				const legalMovesNumbers = get_legal_moves(newBoard);
@@ -55,7 +57,7 @@ export const Board = () => {
 				});
 
 				// AI waits for the board to update before making a move
-				const engineMoveResponse = await make_engine_move(newBoard, aiDifficulty as number);
+				const engineMoveResponse = await make_engine_move(newBoard, aiDifficulty as number, newBoard.game_state.active_color);
 				console.log(engineMoveResponse);
 				if (engineMoveResponse === "Checkmate" || engineMoveResponse.status === "PlayerCheckmate" || engineMoveResponse.status === "InvalidMove") {
 					// Handle terminal conditions for engine move
@@ -90,7 +92,6 @@ export const Board = () => {
 					if (isPossibleMove) {
 						//get move object from possible moves if move is promotion then handle promotion with a modal then handle move
 						const move = possibleMoves.find((move) => move.to === index);
-						console.log("selected move", move);
 						if (move?.promotion !== PieceType.NONE) {
 							//TODO handle promotion
 							console.log("promotion");
