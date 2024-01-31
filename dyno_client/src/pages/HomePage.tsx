@@ -35,9 +35,9 @@ export const HomePage = () => {
 					<label>
 						Difficulty:
 						<select value={difficulty} onChange={(event) => setDifficulty(Number(event.target.value))}>
-							<option value={2}>Easy</option>
-							<option value={4}>Medium</option>
-							<option value={6}>Hard</option>
+							<option value={1000}>Easy</option>
+							<option value={3000}>Medium</option>
+							<option value={6000}>Hard</option>
 						</select>
 					</label>
 					<br />

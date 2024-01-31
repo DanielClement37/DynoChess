@@ -11,7 +11,7 @@ use crate::movegen::MoveGen;
 use crate::search::{alpha_beta};
 use crate::search::defs::INF;
 
-pub fn cmd_game_loop(){
+/*pub fn cmd_game_loop(){
     let mut fen = String::new();
     let mut side_string = String::new();
     let mut depth_string = String::new();
@@ -141,7 +141,7 @@ pub fn cmd_game_loop(){
             return;
         }
     }
-}
+}*/
 
 pub fn random_ai_loop(){
     let mut fen = String::new();

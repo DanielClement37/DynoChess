@@ -89,14 +89,16 @@ pub async fn make_move(board: JsValue, client_mv: usize)-> Result<JsValue, JsVal
 
 /// return a serialized version of the board after the engine has made a move
 #[wasm_bindgen]
-pub async fn make_engine_move(board: JsValue, depth: u8, engine_color: u8) ->  Result<JsValue, JsValue> {
+pub async fn make_engine_move(board: JsValue, duration: f64,engine_color: u8) ->  Result<JsValue, JsValue> {
     let serializer = Serializer::new().serialize_large_number_types_as_bigints(true);
     let mut board:Board = serde_wasm_bindgen::from_value(board).unwrap_or_else(|_| panic!("Failed to deserialize board"));
     let mg = movegen::MoveGen::new();
 
     // Get best AI move from the minimax function here
-    //let maximizing = board.game_state.active_color == engine_color;
-    let best_move = iterative_deepening_search(&mut board, &mg, depth, engine_color);
+    let start_time = js_sys::Date::now();
+    let end_time = start_time + duration;
+
+    let best_move = iterative_deepening_search(&mut board, &mg, end_time, engine_color);
 
     board.make(best_move.unwrap(), &mg); // Make the best move
 
@@ -110,6 +112,8 @@ pub async fn make_engine_move(board: JsValue, depth: u8, engine_color: u8) ->  R
     // Return the updated board with a custom status indicating a regular move
     Ok(EngineResponse::RegularMove(board).serialize(&serializer).unwrap_or_else(|_| panic!("Failed to serialize regular move response")))
 }
+
+
 
 #[derive(Serialize, Deserialize)]
 enum EngineResponse {

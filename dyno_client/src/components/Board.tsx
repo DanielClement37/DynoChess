@@ -27,7 +27,8 @@ export const Board = () => {
 		try {
 			const response = await make_move(matchState.board, moveData);
 
-			if (response === "Checkmate" || response.status === "PlayerCheckmate" || response.status === "InvalidMove") {
+			//TODO Fix if statement for terminal conditions because it continues after checkmate and causes an error
+			if (response.status === "Checkmate" || response.status === "PlayerCheckmate" || response.status === "InvalidMove") {
 				// Handle terminal conditions
 				const newBoard = response === "Checkmate" ? response.Checkmate : response.status === "PlayerCheckmate" ? response.PlayerCheckmate : matchState.board;
 				console.log("Terminal condition reached");
@@ -59,7 +60,7 @@ export const Board = () => {
 				// AI waits for the board to update before making a move
 				const engineMoveResponse = await make_engine_move(newBoard, aiDifficulty as number, newBoard.game_state.active_color);
 				console.log(engineMoveResponse);
-				if (engineMoveResponse === "Checkmate" || engineMoveResponse.status === "PlayerCheckmate" || engineMoveResponse.status === "InvalidMove") {
+				if (engineMoveResponse.status === "Checkmate" || engineMoveResponse.status === "PlayerCheckmate" || engineMoveResponse.status === "InvalidMove") {
 					// Handle terminal conditions for engine move
 					const updatedBoard =
 						engineMoveResponse === "Checkmate"

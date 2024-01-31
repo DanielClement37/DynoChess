@@ -20,6 +20,4 @@ pub fn run_tests() {
 
         assert_eq!(result, expected);
     }
-    println!();
-    println!("All tests passed!");
 }

@@ -11,6 +11,7 @@ use std::{
     time::Instant,
 };
 use crate::movegen::defs::MoveList;
+use web_sys::console;
 
 // This function runs perft(), while collecting speed information.
 // It uses iterative deepening, so when running perft(7), it will output
@@ -19,11 +20,11 @@ pub fn run(
     board: Arc<Mutex<Board>>,
     depth: i8,
     mg: Arc<MoveGen>,
-) -> u64{
-    let mut total_time: u128 = 0;
+) -> u64 {
+    let mut total_time: f64 = 0.0;
     let mut total_nodes: u64 = 0;
     let hash_full = String::from("");
-    let mut last_leaf_nodes:u64 = 0;
+    let mut last_leaf_nodes: u64 = 0;
 
     // Create a mutex guard for the board, so it can be safely cloned.
     // Panic if the guard can't be created, because something is wrong with
@@ -37,39 +38,39 @@ pub fn run(
     // necessary to keep the lock until perft runs out.
     drop(mtx_board);
 
-    println!("Benchmarking perft 1-{}:", depth);
-
-    print::position(&local_board, None);
+    // Use web_sys::console::log_1 instead of println!
+    console::log_1(&format!("Benchmarking perft 1-{}:", depth).into());
 
     // Perform all perfts for depths 1 up to and including "depth"
     for d in 1..=depth {
         // Current time
-        let now = Instant::now();
+        let start = js_sys::Date::now();
         let mut leaf_nodes = 0;
-
         leaf_nodes += perft(&mut local_board, d, &mg);
 
         // Measure time and speed
-        let elapsed = now.elapsed().as_millis();
-        let leaves_per_second = ((leaf_nodes * 1000) as f64 / elapsed as f64).floor();
+        let elapsed = js_sys::Date::now() - start;
+        let leaves_per_second = ((leaf_nodes - last_leaf_nodes) as f64 / elapsed * 1000.0).floor();
 
-        // Add tot totals for final calculation at the very end.
+        // Add tot totals for the final calculation at the very end.
         total_time += elapsed;
         total_nodes += leaf_nodes;
 
-        // Print the results.
-        println!(
+        // Use web_sys::console::log_1 instead of println!
+        console::log_1(&format!(
             "Perft {}: {} ({} ms, {} leaves/sec{})",
             d, leaf_nodes, elapsed, leaves_per_second, hash_full
-        );
+        ).into());
         last_leaf_nodes = leaf_nodes;
     }
 
-    // Final calculation of the entire time taken, and average speed of leaves/second.
+    // Final calculation of the entire time taken and the average speed of leaves/second.
     let final_lnps = ((total_nodes * 1000) as f64 / total_time as f64).floor();
-    println!("Total time spent: {} ms", total_time);
-    println!("Execution speed: {} leaves/second", final_lnps);
-    return last_leaf_nodes;
+    // Use web_sys::console::log_1 instead of println!
+    console::log_1(&format!("Total time spent: {} ms", total_time).into());
+    console::log_1(&format!("Execution speed: {} leaves/second", final_lnps).into());
+
+    last_leaf_nodes
 }
 
 // This is the actual Perft function. It is public, because it is used by

@@ -2,7 +2,6 @@ import { Board } from "./Board.tsx";
 import { GameInfoPanel } from "./GameInfoPanel.tsx";
 import { GamePlayerInfo } from "./GamePlayerInfo.tsx";
 import { PlayerInfo } from "../types/PlayerInfo.ts";
-
 export interface GameProps {
 	player1Info: PlayerInfo;
 	player2Info: PlayerInfo;
