@@ -3,7 +3,7 @@ import { AppContext } from "../context/AppContext.tsx";
 import { BoardTile } from "./BoardTile.tsx";
 import { ConvertBitboardsTo64Array, ConvertBitsToMove, ConvertMoveToBits } from "../utils/BoardHelpers.ts";
 import { PieceType } from "../types/GameEnums.ts";
-import { get_legal_moves, make_engine_move, make_move } from "dyno_engine";
+import { make_move } from "dyno_engine";
 import { MAKE_MOVE, SET_SELECTED_SQUARE } from "../actions/actionTypes.ts";
 import { Move } from "../types/Move.ts";
 import { BoardState } from "../types/GameState.ts";
@@ -11,7 +11,6 @@ import { BoardState } from "../types/GameState.ts";
 export const Board = () => {
 	const { state, dispatch } = useContext(AppContext);
 	const { moveList, selectedSquare, matchState } = state;
-	const aiDifficulty = matchState.aiSettings?.difficulty;
 	const tiles = ConvertBitboardsTo64Array(matchState.board.bb_pieces);
 
 	// Function to filter moves originating from the selected square
@@ -27,7 +26,6 @@ export const Board = () => {
 		try {
 			const response = await make_move(matchState.board, moveData);
 
-			//TODO Fix if statement for terminal conditions because it continues after checkmate and causes an error
 			if (response.status === "Checkmate" || response.status === "PlayerCheckmate" || response.status === "InvalidMove") {
 				// Handle terminal conditions
 				const newBoard = response === "Checkmate" ? response.Checkmate : response.status === "PlayerCheckmate" ? response.PlayerCheckmate : matchState.board;
@@ -43,39 +41,6 @@ export const Board = () => {
 
 				// Allow React to re-render before proceeding
 				await new Promise(resolve => setTimeout(resolve, 0));
-
-				// Get new legal moves
-				const legalMovesNumbers = get_legal_moves(newBoard);
-				const moveDataList: number[] = legalMovesNumbers.list.map((moveDataObj: { data: number }) => moveDataObj.data);
-				const moveCount: number = legalMovesNumbers.count;
-				const moves: Move[] = moveDataList.slice(0, moveCount).map((moveData: number) => {
-					const move = ConvertBitsToMove(moveData);
-					return move;
-				});
-				dispatch({
-					type: "SET_MOVE_LIST",
-					payload: moves,
-				});
-
-				// AI waits for the board to update before making a move
-				const engineMoveResponse = await make_engine_move(newBoard, aiDifficulty as number, newBoard.game_state.active_color);
-				console.log(engineMoveResponse);
-				if (engineMoveResponse.status === "Checkmate" || engineMoveResponse.status === "PlayerCheckmate" || engineMoveResponse.status === "InvalidMove") {
-					// Handle terminal conditions for engine move
-					const updatedBoard =
-						engineMoveResponse === "Checkmate"
-							? engineMoveResponse.Checkmate
-							: engineMoveResponse.status === "PlayerCheckmate"
-							? engineMoveResponse.PlayerCheckmate
-							: newBoard;
-					console.log("Terminal condition reached for engine move");
-					dispatch({ type: MAKE_MOVE, payload: { board: updatedBoard, aiSettings: matchState.aiSettings } });
-				} else {
-					// Handle a regular engine move
-					const updatedBoard = engineMoveResponse.RegularMove;
-					console.log("Regular engine move");
-					dispatch({ type: MAKE_MOVE, payload: { board: updatedBoard, aiSettings: matchState.aiSettings } });
-				}
 			}
 		} catch (error) {
 			console.log(error);
