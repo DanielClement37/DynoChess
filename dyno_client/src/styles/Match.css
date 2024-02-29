@@ -44,3 +44,9 @@
     align-items: center;
     height: 100vh; /* Adjust the height as needed */
 }
+
+.promotion-modal {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    z-index: 10;
+}

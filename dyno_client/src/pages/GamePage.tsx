@@ -48,7 +48,7 @@ export const GamePage = () => {
 	// this will be dynamically generated based on the difficulty
 	const player2Info: PlayerInfo = {
 		name: "AI",
-		isHuman: false,
+		isHuman: true,
 		rating: 800,
 	};
 

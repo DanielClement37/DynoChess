@@ -24,7 +24,7 @@ export const HomePage = () => {
 			finalStartingPlayer = Math.random() < 0.5 ? Player.WHITE : Player.BLACK;
 		}
 
-		navigate("/play/ai", { state: { difficulty, startingPlayer: finalStartingPlayer } as GameSettingsAI });
+		navigate("/play/ai", { state: {  startingPlayer: finalStartingPlayer } as GameSettingsAI });
 	};
 
 	return (
@@ -33,20 +33,10 @@ export const HomePage = () => {
 			{showModal && (
 				<form onSubmit={handleFormSubmit}>
 					<label>
-						Difficulty:
-						<select value={difficulty} onChange={(event) => setDifficulty(Number(event.target.value))}>
-							<option value={1000}>Easy</option>
-							<option value={3000}>Medium</option>
-							<option value={6000}>Hard</option>
-						</select>
-					</label>
-					<br />
-					<label>
 						Starting Player:
 						<select value={startingPlayer} onChange={(event) => setStartingPlayer(event.target.value as Player | string)}>
 							<option value={Player.WHITE}>White</option>
 							<option value={Player.BLACK}>Black</option>
-							<option value="random">Random</option>
 						</select>
 					</label>
 					<br />

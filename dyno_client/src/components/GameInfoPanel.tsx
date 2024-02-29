@@ -1,3 +1,4 @@
 export const GameInfoPanel = () => {
-	return <div></div>;
+	// this will display the game history
+	return <div className="game-info-panel"></div>;
 };
