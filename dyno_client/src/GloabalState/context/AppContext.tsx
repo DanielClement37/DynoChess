@@ -1,5 +1,5 @@
 import React, { createContext, useReducer, ReactNode } from 'react';
-import { AppState, appReducer, initialState } from '../reducers/appReducer';
+import { AppState, appReducer, initialState } from '../reducers/appReducer.ts';
 
 interface IChildren {
     children: ReactNode;

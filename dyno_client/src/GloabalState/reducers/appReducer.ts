@@ -1,7 +1,7 @@
-import { SET_MATCH_STATE, SET_MOVE_LIST, SET_SELECTED_SQUARE, MAKE_MOVE } from "../actions/actionTypes";
-import { make_initial_position } from "dyno_engine";
-import { MatchState } from "../types/GameState";
-import { Move } from "../types/Move";
+import { SET_MATCH_STATE, SET_MOVE_LIST, SET_SELECTED_SQUARE, MAKE_MOVE } from "../actions/actionTypes.ts";
+import { make_initial_position } from "../dyno_engine/pkg";
+import { MatchState } from "../../types/GameState.ts";
+import { Move } from "../../types/Move.ts";
 
 export interface AppState {
 	matchState: MatchState;

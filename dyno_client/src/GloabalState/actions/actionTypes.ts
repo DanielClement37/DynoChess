@@ -1,5 +1,5 @@
-import { MatchState } from "../types/GameState";
-import { Move } from "../types/Move";
+import { MatchState } from "../../types/GameState.ts";
+import { Move } from "../../types/Move.ts";
 
 export const SET_MATCH_STATE = "SET_MATCH_STATE";
 export const SET_MOVE_LIST = "SET_MOVE_LIST";
