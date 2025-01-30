@@ -15,18 +15,19 @@ use self::{
     history::History,
     zobrist::{ZobristKey, ZobristRandoms},
 };
+use crate::frontend::{BoardView, PieceOnSquare};
 use crate::{
     defs::{Bitboard, NrOf, Piece, Side, Sides, Square, EMPTY},
-    misc::bits,
     eval::{
         defs::PIECE_VALUES,
         material,
         psqt::{self, FLIP, PSQT_MG},
-    }
+    },
+    misc::bits,
 };
-use std::sync::Arc;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use serde_big_array::BigArray;
+use std::sync::Arc;
 
 // This file implements the engine's board representation; it is bit-board
 // based, with the least significant bit being A1.
@@ -144,6 +145,53 @@ impl Board {
         self.game_state.zobrist_key ^= self.zr.castling(self.game_state.castling);
         self.game_state.castling = new_permissions;
         self.game_state.zobrist_key ^= self.zr.castling(self.game_state.castling);
+    }
+
+    pub fn to_board_view(&self) -> BoardView {
+        let mut squares: [Option<PieceOnSquare>; 64] = [None; 64];
+
+        for square in 0..64 {
+            let piece_type = self.piece_list[square];
+            if piece_type != Pieces::NONE {
+                let color = if (self.bb_side[Sides::WHITE] & BB_SQUARES[square]) != 0 {
+                    Sides::WHITE
+                } else {
+                    Sides::BLACK
+                };
+
+                squares[square] = Some(PieceOnSquare {
+                    piece_type: piece_type as u8, // e.g. 0 = KING, 1 = QUEEN, etc.
+                    color: color as u8,           // 0 = White, 1 = Black
+                });
+            }
+        }
+
+        BoardView {
+            squares,
+            active_color: self.game_state.active_color,
+            castling_rights: self.game_state.castling,
+            en_passant_square: self.game_state.en_passant,
+            halfmove_clock: self.game_state.halfmove_clock as u16,
+            fullmove_number: self.game_state.fullmove_number,
+            is_checkmate: false,
+            is_stalemate: false,
+        }
+    }
+
+    pub fn from_board_view(board_view: BoardView) -> Board {
+        // TODO:
+        // Create a new Board, then fill in bitboards/piece_list by looking at `view.squares`.
+        // Then re-run your board.init() or do partial init (material, psqt, etc.) as needed.
+
+        // Pseudocode:
+        let mut board = Board::new();
+        board.reset();
+
+        // For each square in view.squares...
+        //   if there's Some(piece_on_square), set the corresponding piece bit in board.
+        // Then do board.init() or re-calc material, etc.
+
+        board
     }
 }
 
