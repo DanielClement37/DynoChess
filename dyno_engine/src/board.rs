@@ -147,21 +147,29 @@ impl Board {
         self.game_state.zobrist_key ^= self.zr.castling(self.game_state.castling);
     }
 
-    pub fn to_board_view(&self) -> BoardView {
+    pub fn to_board_view(&self, flip: bool) -> BoardView {
         let mut squares: [Option<PieceOnSquare>; 64] = [None; 64];
 
-        for square in 0..64 {
-            let piece_type = self.piece_list[square];
+        for visual_index in 0..64 {
+            let (row, col) = (visual_index / 8, visual_index % 8);
+            // If flip is true, invert the row.
+            let engine_index = if flip {
+                (7 - row) * 8 + col
+            } else {
+                visual_index
+            };
+
+            let piece_type = self.piece_list[engine_index];
             if piece_type != Pieces::NONE {
-                let color = if (self.bb_side[Sides::WHITE] & BB_SQUARES[square]) != 0 {
+                let color = if (self.bb_side[Sides::WHITE] & BB_SQUARES[engine_index]) != 0 {
                     Sides::WHITE
                 } else {
                     Sides::BLACK
                 };
 
-                squares[square] = Some(PieceOnSquare {
-                    piece_type: piece_type as u8, // e.g. 0 = KING, 1 = QUEEN, etc.
-                    color: color as u8,           // 0 = White, 1 = Black
+                squares[visual_index] = Some(PieceOnSquare {
+                    piece_type: piece_type as u8,
+                    color: color as u8,
                 });
             }
         }

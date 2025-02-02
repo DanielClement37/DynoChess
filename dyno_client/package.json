@@ -14,9 +14,7 @@
     "dyno_engine": "file:../dyno_engine/pkg",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-redux": "^8.1.3",
-    "react-router-dom": "^6.10.0",
-    "redux": "^4.2.1"
+    "react-router-dom": "^6.10.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
