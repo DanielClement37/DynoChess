@@ -15,15 +15,8 @@ export const GamePage = () => {
 		if (!state.currentBoard) return;
 		const engine = await import("../../public/dyno_engine/dyno_engine.js");
 		await engine.default();
-
 		const newView = await engine.flip_board_js(state.currentBoard);
-
-		console.log("Old squares", state.currentBoard?.squares);
-		console.log("New squares", newView.squares);
-
 		dispatch({ type: ActionType.SET_BOARD, payload: newView });
-
-		console.log("Flipped state is now:", newView.was_flipped);
 	}
 
 	async function handleReset() {
@@ -34,7 +27,6 @@ export const GamePage = () => {
 		const newBoard = engine.init_board(currentFlip);
 		dispatch({ type: ActionType.SET_BOARD, payload: newBoard });
 	}
-
 
 	return (
 		<div className="game-page">

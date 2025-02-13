@@ -36,21 +36,12 @@ pub fn init_board(flip: bool) -> JsValue {
 }
 
 #[wasm_bindgen]
-pub fn make_move_js(board_view_js: &JsValue, from: usize, to: usize) -> JsValue {
+pub fn make_move_js(board_view_js: &JsValue, from_ui: usize, to_ui: usize) -> JsValue {
     let old_view: BoardView = board_view_js.into_serde().unwrap();
     let mut board = Board::from_board_view(old_view.clone());
 
-    // If was_flipped is true, invert user’s from/to
-    let engine_from = if old_view.was_flipped {
-        flip_square(from)
-    } else {
-        from
-    };
-    let engine_to = if old_view.was_flipped {
-        flip_square(to)
-    } else {
-        to
-    };
+    let engine_from = ui_to_engine(from_ui, old_view.was_flipped);
+    let engine_to   = ui_to_engine(to_ui,   old_view.was_flipped);
 
     let mg = MoveGen::new();
     let legal_moves = mg.generate_legal_moves(&board, MoveType::All);
@@ -105,22 +96,12 @@ pub fn get_legal_moves_js(board_view_js: &JsValue) -> JsValue {
         let mv = legal_moves.get_move(i);
         let (engine_from, engine_to) = (mv.from(), mv.to());
 
-        // Convert engine_from -> visual_from if needed
-        let visual_from = if old_view.was_flipped {
-            flip_square(engine_from)
-        } else {
-            engine_from
-        };
-
-        let visual_to = if old_view.was_flipped {
-            flip_square(engine_to)
-        } else {
-            engine_to
-        };
+        let from_ui = engine_to_ui(engine_from, old_view.was_flipped);
+        let to_ui   = engine_to_ui(engine_to,   old_view.was_flipped);
 
         moves_vec.push(MoveView {
-            from: visual_from as u8,
-            to: visual_to as u8,
+            from: from_ui as u8,
+            to: to_ui as u8,
             piece_type: mv.piece() as u8,
             capture: mv.captured() as u8,
             promotion: mv.promoted() as u8,
@@ -139,9 +120,28 @@ pub fn flip_board_js(board_view_js: &JsValue) -> JsValue {
     JsValue::from_serde(&new_view).unwrap()
 }
 
-fn flip_square(sq: usize) -> usize {
-    let sq_u8 = sq as u8;
-    let row = sq_u8 / 8;
-    let col = sq_u8 % 8;
-    (7 - row) as usize * 8 + col as usize
+fn engine_to_ui(engine_sq: usize, was_flipped: bool) -> usize {
+    let row = engine_sq / 8;
+    let col = engine_sq % 8;
+
+    if was_flipped {
+        let ui_row = row;
+        let ui_col = 7 - col;
+        ui_row * 8 + ui_col
+    } else {
+        let ui_row = 7 - row;
+        let ui_col = col;
+        ui_row * 8 + ui_col
+    }
+}
+
+fn ui_to_engine(ui_sq: usize, was_flipped: bool) -> usize {
+    let row = ui_sq / 8;
+    let col = ui_sq % 8;
+
+    if was_flipped {
+        row * 8 + (7 - col)
+    } else {
+        (7 - row)*8 + col
+    }
 }

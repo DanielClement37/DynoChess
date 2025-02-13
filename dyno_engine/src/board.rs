@@ -153,9 +153,9 @@ impl Board {
         for visual_index in 0..64 {
             let (row, col) = (visual_index / 8, visual_index % 8);
             let engine_index = if flip {
-                (7 - row) * 8 + col
+                row * 8 + (7 - col)
             } else {
-                visual_index
+                (7 - row) * 8 + col
             };
 
             let piece_type = self.piece_list[engine_index];
@@ -192,12 +192,11 @@ impl Board {
         let was_flipped = view.was_flipped;
         for visual_index in 0..64 {
             if let Some(piece_on_sq) = view.squares[visual_index] {
-                let row = visual_index / 8;
-                let col = visual_index % 8;
-                let engine_index = if was_flipped {
-                    (7 - row) * 8 + col
+                let (row, col) = (visual_index / 8, visual_index % 8);
+                let engine_index = if view.was_flipped {
+                    row * 8 + (7 - col)
                 } else {
-                    visual_index
+                    (7 - row) * 8 + col
                 };
                 let piece_type = piece_on_sq.piece_type as usize;
                 let side = piece_on_sq.color as usize;
