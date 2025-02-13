@@ -1,5 +1,5 @@
 import React from 'react';
-import { PieceOnSquare } from '../types/GameTypes.ts';
+import {PieceOnSquare} from '../types/GameTypes.ts';
 import blackBishop from '../assets/bishop-black.svg';
 import whiteBishop from '../assets/bishop-white.svg';
 import blackKing from '../assets/king-black.svg';
@@ -16,20 +16,19 @@ import whiteRook from '../assets/rook-white.svg';
 interface BoardTileProps {
     index: number;
     square: PieceOnSquare | null;
+    isSelected: boolean;
+    isHighlighted: boolean;
+    onClick: () => void;
 }
 
-const BoardTile: React.FC<BoardTileProps> = ({ index, square }) => {
-
+const BoardTile: React.FC<BoardTileProps> = ({index, square, isSelected, isHighlighted, onClick}) => {
     const row = Math.floor(index / 8);
     const col = index % 8;
-
     const isDarkSquare = (row + col) % 2 === 1;
 
-    // This function returns the corresponding SVG image for a piece
     function getPieceImage(square: PieceOnSquare | null): string | null {
         if (!square) return null; // No piece
-        const { piece_type, color } = square;
-        // color 0=white, 1=black
+        const {piece_type, color} = square;
         const isWhite = (color === 0);
 
         switch (piece_type) {
@@ -53,8 +52,12 @@ const BoardTile: React.FC<BoardTileProps> = ({ index, square }) => {
     const pieceSrc = getPieceImage(square);
 
     return (
-        <div className={`board-tile ${isDarkSquare ? 'dark-square' : 'light-square'}`}>
-            {pieceSrc && <img src={pieceSrc} alt="chess-piece" className="piece-img" />}
+        <div className={`board-tile 
+        ${isDarkSquare ? 'dark-square' : 'light-square'} 
+        ${isSelected ? 'selected' : ''}
+        ${isHighlighted ? 'highlighted-tile' : ''}`}
+             onClick={onClick}>
+            {pieceSrc && <img src={pieceSrc} alt="chess-piece" className="piece-img"/>}
         </div>
     );
 };

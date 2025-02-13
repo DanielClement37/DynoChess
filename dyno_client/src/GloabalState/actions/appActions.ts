@@ -6,16 +6,8 @@ export interface SetBoardAction {
     payload: BoardView;
 }
 
-export interface MakeMoveAction {
-    type: ActionType.MAKE_MOVE;
-    payload: {
-        fromSquare: number;
-        toSquare: number;
-    };
-}
-
 export interface ToggleFlipAction {
     type: ActionType.FLIP_BOARD;
 }
 
-export type AppActions = SetBoardAction | MakeMoveAction | ToggleFlipAction;
+export type AppActions = SetBoardAction | ToggleFlipAction;

@@ -1,20 +1,13 @@
-/**
- * Mirrors `frontend::BoardView` in Rust.
- * Make sure field names match exactly.
- */
 export interface BoardView {
-    // squares[0..63] each can be null or a PieceOnSquare
     squares: Array<PieceOnSquare | null>;
-
-    active_color: number;      // 0 = White, 1 = Black
-    castling_rights: number;   // bitmask for castling
-    en_passant_square: number | null; // optional
+    active_color: number;
+    castling_rights: number;
+    en_passant_square: number | null;
     halfmove_clock: number;
     fullmove_number: number;
-
-    // For UI info, if you want them
     is_checkmate: boolean;
     is_stalemate: boolean;
+    was_flipped: boolean;
 }
 
 export interface PieceOnSquare {
@@ -22,7 +15,14 @@ export interface PieceOnSquare {
     color: number;      // 0=White,1=Black
 }
 
-// A union type:
+export interface MoveView{
+    from: number,
+    to: number,
+    piece_type: number,
+    capture: number,
+    promotion: number,
+}
+
 export type EngineResponse =
     | {
     status: "RegularMove";

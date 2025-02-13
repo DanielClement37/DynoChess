@@ -152,7 +152,6 @@ impl Board {
 
         for visual_index in 0..64 {
             let (row, col) = (visual_index / 8, visual_index % 8);
-            // If flip is true, invert the row.
             let engine_index = if flip {
                 (7 - row) * 8 + col
             } else {
@@ -183,21 +182,38 @@ impl Board {
             fullmove_number: self.game_state.fullmove_number,
             is_checkmate: false,
             is_stalemate: false,
+            was_flipped: flip, 
         }
     }
 
-    pub fn from_board_view(board_view: BoardView) -> Board {
-        // TODO:
-        // Create a new Board, then fill in bitboards/piece_list by looking at `view.squares`.
-        // Then re-run your board.init() or do partial init (material, psqt, etc.) as needed.
-
-        // Pseudocode:
+    pub fn from_board_view(view: BoardView) -> Board {
         let mut board = Board::new();
         board.reset();
+        let was_flipped = view.was_flipped;
+        for visual_index in 0..64 {
+            if let Some(piece_on_sq) = view.squares[visual_index] {
+                let row = visual_index / 8;
+                let col = visual_index % 8;
+                let engine_index = if was_flipped {
+                    (7 - row) * 8 + col
+                } else {
+                    visual_index
+                };
+                let piece_type = piece_on_sq.piece_type as usize;
+                let side = piece_on_sq.color as usize;
+                board.put_piece(side, piece_type, engine_index);
+            }
+        }
 
-        // For each square in view.squares...
-        //   if there's Some(piece_on_square), set the corresponding piece bit in board.
-        // Then do board.init() or re-calc material, etc.
+        // Copy over additional game_state fields from BoardView
+        board.game_state.active_color = view.active_color;
+        board.game_state.castling = view.castling_rights;
+        board.game_state.en_passant = view.en_passant_square;
+        board.game_state.halfmove_clock = view.halfmove_clock as u8;
+        board.game_state.fullmove_number = view.fullmove_number;
+
+        // Reinitialize material, psqt, Zobrist, etc.
+        board.init();
 
         board
     }

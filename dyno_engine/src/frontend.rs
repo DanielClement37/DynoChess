@@ -18,12 +18,14 @@ pub struct BoardView {
     pub fullmove_number: u16,
     pub is_checkmate: bool,
     pub is_stalemate: bool,
+    pub was_flipped: bool,
 }
 
-
-
+#[derive(Serialize, Deserialize, Debug)]
 pub struct MoveView {
-    from: u8,
-    to: u8,
-    piece_type: u8,
+    pub from: u8,
+    pub to: u8,
+    pub piece_type: u8,
+    pub capture: u8,
+    pub promotion: u8,
 }
